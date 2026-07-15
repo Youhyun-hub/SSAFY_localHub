@@ -1,21 +1,30 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useChatbot } from '@/composables/useChatbot'
+import { useChatbotPanel } from '@/composables/useChatbotPanel'
 import { usePlaceData } from '@/composables/usePlaceData'
 
-const isOpen = ref(false)
 const inputText = ref('')
 
+const { isOpen, toggle: togglePanel } = useChatbotPanel()
 const { history, loading, sendMessage } = useChatbot()
 const { allData, loaded, loadAll } = usePlaceData()
 
 async function toggle() {
-  isOpen.value = !isOpen.value
+  togglePanel()
   // 챗봇을 처음 열 때 데이터가 아직 안 실렸으면 로드 (홈 화면 진입 전에 열 수도 있으므로)
   if (isOpen.value && !loaded.value) {
     await loadAll()
   }
 }
+
+// 다른 페이지(테마여행 등)에서 프리셋 메시지를 넣고 패널을 열었을 때도
+// 데이터 로드가 안 되어 있으면 챙겨서 로드
+watch(isOpen, async (open) => {
+  if (open && !loaded.value) {
+    await loadAll()
+  }
+})
 
 async function handleSend() {
   const text = inputText.value.trim()
@@ -116,7 +125,7 @@ async function handleSend() {
 .chatbot-panel {
   width: 320px;
   max-height: 460px;
-  background: #fff;
+  background: var(--lh-surface);
   border-radius: 16px;
   border: 1px solid var(--lh-line);
   box-shadow: 0 8px 30px rgba(20, 40, 70, 0.15);

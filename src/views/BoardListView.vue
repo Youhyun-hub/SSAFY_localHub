@@ -30,7 +30,7 @@ function formatDate(ts) {
 
 <template>
   <div class="board-list">
-    <p class="breadcrumb">홈 &gt; 서울/경기 게시판</p>
+    <p class="breadcrumb">홈 &gt; 서울 동네방네</p>
 
     <div class="toolbar">
       <input v-model="keyword" type="text" placeholder="게시글 검색어를 입력하세요" @input="currentPage = 1" />
@@ -113,7 +113,7 @@ function formatDate(ts) {
 .board-table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
+  background: var(--lh-surface);
   border: 1px solid var(--lh-line);
   border-radius: 12px;
   overflow: hidden;
@@ -154,7 +154,7 @@ function formatDate(ts) {
 
 .pagination button {
   border: 1px solid var(--lh-line);
-  background: #fff;
+  background: var(--lh-surface);
   border-radius: 6px;
   padding: 6px 10px;
   cursor: pointer;

@@ -17,11 +17,13 @@ function buildContextSummary(allData) {
   return parts.join("\n");
 }
 
-export function useChatbot() {
-  const history = ref([]); // { role: 'user' | 'assistant', content: string }[]
-  const loading = ref(false);
-  const error = ref(null);
+// 모듈 스코프 싱글턴 — ChatBot.vue와 테마여행 페이지가 같은 대화 히스토리를 공유하게 함
+// (예: 테마여행 페이지에서 "AI로 짜기" 버튼을 누르면 플로팅 챗봇에 그대로 이어짐)
+const history = ref([]); // { role: 'user' | 'assistant', content: string }[]
+const loading = ref(false);
+const error = ref(null);
 
+export function useChatbot() {
   async function sendMessage(userMessage, allData) {
     history.value.push({ role: "user", content: userMessage });
     loading.value = true;

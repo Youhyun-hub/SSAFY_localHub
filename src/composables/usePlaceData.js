@@ -98,6 +98,12 @@ export function usePlaceData() {
     return `https://korean.visitkorea.or.kr/search/search_list.do?keyword=${keyword}`
   }
 
+  // 관광정보 상세 페이지(/tour/place/:category/:id)에서 사용 — 카테고리+contentid로 단일 항목 조회
+  function getItem(category, contentid) {
+    const items = allData.value[category] || []
+    return items.find((i) => i.contentid === contentid) || null
+  }
+
   return {
     allData,
     loading,
@@ -109,5 +115,6 @@ export function usePlaceData() {
     getDistricts,
     getFiltered,
     getDetailLink,
+    getItem,
   }
 }

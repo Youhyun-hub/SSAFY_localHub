@@ -26,11 +26,19 @@ import ChatBot from '@/components/ChatBot.vue'
 
 <style>
 :root {
-  --lh-ink: #1c2b3a;
-  --lh-bg: #f7fafd;
-  --lh-accent: #2f6fed;
-  --lh-line: #d6e0ec;
-  --lh-muted: #5b6b7c;
+  /* 서울 심벌마크 컬러 기반 테마 (실제 심벌 이미지에서 추출한 값) */
+  --lh-ink: #2a241e;           /* 기본 텍스트 — 완전 검정 대신 따뜻한 다크브라운 */
+  --lh-bg: #f7f1e4;            /* 페이지 배경 — 한지(hanji) 느낌의 따뜻한 크림톤 */
+  --lh-surface: #fffdf8;       /* 카드·패널 배경 — 배경보다 살짝 밝은 아이보리 */
+  --lh-surface-hover: #f1ead9; /* 카드 hover, 인풋 포커스 등 */
+  --lh-accent: #2872b3;        /* 서울 심벌 블루 — 메인 액션·링크 */
+  --lh-accent-soft: rgba(40, 114, 179, 0.1); /* 배지·칩 배경 */
+  --lh-red: #c2001f;           /* 서울 심벌 레드 — 강조·알림·삭제 */
+  --lh-red-soft: rgba(194, 0, 31, 0.1);
+  --lh-green: #308027;         /* 서울 심벌 그린 — 좋음 상태·자연 관련 */
+  --lh-green-soft: rgba(48, 128, 39, 0.1);
+  --lh-line: #e3d8c3;          /* 구분선·테두리 — 따뜻한 베이지 */
+  --lh-muted: #7c6f61;         /* 보조 텍스트 */
 }
 
 * { box-sizing: border-box; }
@@ -43,6 +51,28 @@ body {
 }
 
 a { text-decoration: none; color: inherit; }
+
+/* 폼 요소는 브라우저 기본값을 쓰기 때문에 전역으로 테마를 맞춰줌.
+   각 컴포넌트의 개별 border 지정은 그대로 유지되고 배경/글자색만 여기서 통일함 */
+input, select, textarea, button {
+  font-family: inherit;
+  color: var(--lh-ink);
+}
+
+input, select, textarea {
+  background: var(--lh-surface);
+  accent-color: var(--lh-accent);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--lh-muted);
+  opacity: 0.8;
+}
+
+select option {
+  background: var(--lh-surface);
+  color: var(--lh-ink);
+}
 
 .app-shell {
   min-height: 100vh;

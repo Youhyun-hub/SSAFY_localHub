@@ -51,7 +51,7 @@ onMounted(fetchSeoulWeather)
 
 <style scoped>
 .weather-widget {
-  background: #fff;
+  background: var(--lh-surface);
   border: 1px solid var(--lh-line);
   border-radius: 14px;
   padding: 16px 20px;
@@ -64,7 +64,7 @@ onMounted(fetchSeoulWeather)
 }
 
 .weather-status.error {
-  color: #b3261e;
+  color: var(--lh-red);
 }
 
 .weather-main {
@@ -96,7 +96,7 @@ onMounted(fetchSeoulWeather)
   border-radius: 8px;
 }
 
-.suitability.good { background: #e3f6e8; color: #1a7a3e; }
-.suitability.caution { background: #fff4e0; color: #9a6a00; }
-.suitability.bad { background: #fde8e6; color: #b3261e; }
+.suitability.good { background: var(--lh-green-soft); color: var(--lh-green); }
+.suitability.caution { background: rgba(194, 130, 0, 0.12); color: #a06800; }
+.suitability.bad { background: var(--lh-red-soft); color: var(--lh-red); }
 </style>

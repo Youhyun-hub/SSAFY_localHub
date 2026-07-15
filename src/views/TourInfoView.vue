@@ -12,7 +12,7 @@ const activeCategory = ref('관광지')
 const activeDistrict = ref('') // '' = 전체
 const keyword = ref('')
 const page = ref(0)
-const pageSize = 8
+const pageSize = 10
 
 const districts = computed(() => (loaded.value ? getDistricts(activeCategory.value) : []))
 
@@ -153,7 +153,7 @@ function nextPage() {
 
 .tab {
   border: 1px solid var(--lh-line);
-  background: #fff;
+  background: var(--lh-surface);
   color: var(--lh-muted);
   font-size: 13px;
   font-weight: 600;
@@ -185,7 +185,7 @@ function nextPage() {
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 13px;
-  background: #fff;
+  background: var(--lh-surface);
 }
 
 .keyword-input {
@@ -196,7 +196,7 @@ function nextPage() {
 .month-note {
   font-size: 12px;
   color: var(--lh-muted);
-  background: #f1f5fb;
+  background: var(--lh-accent-soft);
   border: 1px solid var(--lh-line);
   border-radius: 8px;
   padding: 10px 12px;
@@ -221,7 +221,7 @@ function nextPage() {
   height: 36px;
   border-radius: 50%;
   border: 1px solid var(--lh-line);
-  background: #fff;
+  background: var(--lh-surface);
   font-size: 18px;
   line-height: 1;
   cursor: pointer;
@@ -236,8 +236,20 @@ function nextPage() {
 .place-grid {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(5, 1fr);
   gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .place-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .place-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .page-indicator {

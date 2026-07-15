@@ -2,6 +2,8 @@
 import { RouterLink, useRoute } from 'vue-router'
 
 const route = useRoute()
+
+const otherRegions = ['대전·충청', '구미·경북', '광주·전라', '부산']
 </script>
 
 <template>
@@ -10,6 +12,7 @@ const route = useRoute()
       <RouterLink to="/" class="brand">
         <span class="brand-mark">●</span>
         LocalHub
+        <span class="brand-region">서울</span>
       </RouterLink>
 
       <nav class="menu">
@@ -17,18 +20,26 @@ const route = useRoute()
         <RouterLink to="/tour" class="menu-link" :class="{ active: route.path.startsWith('/tour') }">
           관광정보
         </RouterLink>
+        <RouterLink to="/plan" class="menu-link" :class="{ active: route.path.startsWith('/plan') }">
+          테마여행
+        </RouterLink>
         <RouterLink to="/board" class="menu-link" :class="{ active: route.path.startsWith('/board') }">
-          게시판
+          동네방네
         </RouterLink>
       </nav>
 
-      <nav class="region-nav">
+      <div class="region-indicator">
         <span class="region active">서울</span>
-        <span class="region disabled">대전·충청</span>
-        <span class="region disabled">구미·경북</span>
-        <span class="region disabled">광주·전라</span>
-        <span class="region disabled">부산</span>
-      </nav>
+        <span
+          v-for="r in otherRegions"
+          :key="r"
+          class="region disabled"
+          title="서비스 준비 중이에요"
+        >
+          {{ r }}
+          <span class="soon-badge">준비중</span>
+        </span>
+      </div>
     </div>
   </header>
 </template>
@@ -38,7 +49,7 @@ const route = useRoute()
   position: sticky;
   top: 0;
   z-index: 20;
-  background: #fff;
+  background: var(--lh-surface);
   border-bottom: 1px solid var(--lh-line);
 }
 
@@ -49,6 +60,7 @@ const route = useRoute()
   display: flex;
   align-items: center;
   gap: 28px;
+  flex-wrap: wrap;
 }
 
 .brand {
@@ -65,6 +77,16 @@ const route = useRoute()
 .brand-mark {
   color: var(--lh-accent);
   font-size: 10px;
+}
+
+.brand-region {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--lh-accent);
+  background: var(--lh-accent-soft);
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: 2px;
 }
 
 .menu {
@@ -87,49 +109,52 @@ const route = useRoute()
 }
 
 .menu-link.active {
-  background: #eaf1fd;
+  background: var(--lh-accent-soft);
   color: var(--lh-accent);
 }
 
-.region-nav {
+/* 지역 표시: 서울만 활성, 나머지는 "준비중" 뱃지가 hover 시 나타남.
+   가로 스크롤(overflow-x)을 쓰지 않아 브라우저의 스크롤 화살표가 뜨지 않도록 함 */
+.region-indicator {
   display: flex;
-  gap: 14px;
+  gap: 10px;
   margin-left: auto;
-  font-size: 13px;
-  overflow-x: auto;
+  font-size: 12.5px;
+  flex-wrap: wrap;
 }
 
 .region {
   white-space: nowrap;
+  position: relative;
 }
 
 .region.active {
   color: var(--lh-accent);
   font-weight: 700;
-  position: relative;
-}
-
-.region.active::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -13px;
-  height: 2px;
-  background: var(--lh-accent);
 }
 
 .region.disabled {
-  color: #c3ccd6;
-  cursor: not-allowed;
+  color: var(--lh-muted);
+  cursor: default;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
-@media (max-width: 640px) {
+.soon-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--lh-muted);
+  background: var(--lh-surface-hover);
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+
+@media (max-width: 720px) {
   .navbar-inner {
-    flex-wrap: wrap;
     gap: 10px 20px;
   }
-  .region-nav {
+  .region-indicator {
     order: 3;
     width: 100%;
     margin-left: 0;
@@ -138,3 +163,4 @@ const route = useRoute()
   }
 }
 </style>
+

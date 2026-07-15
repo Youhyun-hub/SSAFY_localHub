@@ -59,7 +59,7 @@ function formatDate(ts) {
 
 <template>
   <div v-if="post" class="board-detail">
-    <p class="breadcrumb">홈 &gt; 서울/경기 게시판 &gt; 게시글 상세</p>
+    <p class="breadcrumb">홈 &gt; 서울 동네방네 &gt; 게시글 상세</p>
 
     <h1>{{ post.title }}</h1>
     <p class="meta">작성일: {{ formatDate(post.createdAt) }} · 조회 {{ post.views }}</p>
@@ -144,7 +144,7 @@ h1 {
 
 .icon-btn {
   border: 1px solid var(--lh-line);
-  background: #fff;
+  background: var(--lh-surface);
   border-radius: 8px;
   padding: 8px 14px;
   font-size: 13px;
@@ -154,7 +154,7 @@ h1 {
 .icon-btn.active {
   border-color: var(--lh-accent);
   color: var(--lh-accent);
-  background: #eef4fb;
+  background: var(--lh-accent-soft);
 }
 
 .bottom-row {
@@ -183,12 +183,12 @@ h1 {
   font-size: 14px;
   cursor: pointer;
   border: 1px solid var(--lh-line);
-  background: #fff;
+  background: var(--lh-surface);
 }
 
 .delete-btn {
-  color: #d33;
-  border-color: #f3c6c6;
+  color: var(--lh-red);
+  border-color: var(--lh-red-soft);
 }
 
 .modal-overlay {
@@ -202,7 +202,7 @@ h1 {
 }
 
 .modal {
-  background: #fff;
+  background: var(--lh-surface);
   border-radius: 14px;
   padding: 24px;
   width: 280px;
@@ -224,7 +224,7 @@ h1 {
 }
 
 .error-text {
-  color: #d33;
+  color: var(--lh-red);
   font-size: 12px;
   margin: 0 0 8px;
 }

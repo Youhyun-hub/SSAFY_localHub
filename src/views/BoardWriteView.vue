@@ -28,7 +28,7 @@ function handleSubmit() {
 
 <template>
   <div class="board-write">
-    <p class="breadcrumb">홈 &gt; 서울/경기 게시판 &gt; 글쓰기</p>
+    <p class="breadcrumb">홈 &gt; 서울 동네방네 &gt; 글쓰기</p>
 
     <form @submit.prevent="handleSubmit">
       <label>제목</label>
@@ -86,7 +86,7 @@ input, textarea {
 }
 
 .error-text {
-  color: #d33;
+  color: var(--lh-red);
   font-size: 13px;
   margin: 8px 0 0;
 }
