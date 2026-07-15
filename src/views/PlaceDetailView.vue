@@ -1,6 +1,7 @@
 <script setup>
-import { computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import PlaceMap from '@/components/PlaceMap.vue'
 import { usePlaceData } from '@/composables/usePlaceData'
 
 const props = defineProps({
@@ -10,6 +11,7 @@ const props = defineProps({
 
 const router = useRouter()
 const { loaded, loadAll, getItem, getDetailLink } = usePlaceData()
+const activeTab = ref('info')
 
 onMounted(async () => {
   if (!loaded.value) await loadAll()
@@ -28,46 +30,75 @@ function goBack() {
     <button class="back-btn" @click="goBack">‹ 목록으로</button>
 
     <!-- 사진 클릭 시 VisitKorea(대한민국 구석구석) 검색 결과로 이동 -->
-    <a
-      v-if="place.firstimage"
-      :href="externalLink"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="photo-link"
-      title="VisitKorea에서 자세히 보기"
-    >
-      <img :src="place.firstimage" :alt="place.title" />
-      <span class="photo-overlay">📷 VisitKorea에서 자세히 보기 ↗</span>
-    </a>
-    <div v-else class="photo-placeholder">🖼️ 등록된 사진이 없어요</div>
+    <div class="detail-tabs">
+      <button
+        type="button"
+        :class="{ active: activeTab === 'info' }"
+        @click="activeTab = 'info'"
+      >
+        정보
+      </button>
+      <button
+        type="button"
+        :class="{ active: activeTab === 'map' }"
+        @click="activeTab = 'map'"
+      >
+        지도
+      </button>
+    </div>
 
-    <div class="detail-body">
-      <span class="category-badge">{{ category }}</span>
-      <h1>{{ place.title }}</h1>
-
-      <ul class="info-list">
-        <li v-if="place.addr1">
-          <span class="info-label">주소</span>
-          <span>{{ place.addr1 }}{{ place.addr2 ? ` ${place.addr2}` : '' }}</span>
-        </li>
-        <li v-if="place.tel">
-          <span class="info-label">전화</span>
-          <span>{{ place.tel }}</span>
-        </li>
-        <li v-if="place.zipcode">
-          <span class="info-label">우편번호</span>
-          <span>{{ place.zipcode }}</span>
-        </li>
-      </ul>
-
-      <a :href="externalLink" target="_blank" rel="noopener noreferrer" class="visitkorea-btn">
-        VisitKorea에서 상세정보 보기 ↗
+    <div v-if="activeTab === 'info'">
+      <a
+        v-if="place.firstimage"
+        :href="externalLink"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="photo-link"
+        title="VisitKorea에서 자세히 보기"
+      >
+        <img :src="place.firstimage" :alt="place.title" />
+        <span class="photo-overlay">📷 VisitKorea에서 자세히 보기 ↗</span>
       </a>
+      <div v-else class="photo-placeholder">🖼️ 등록된 사진이 없어요</div>
 
-      <p class="source-note">
-        본 정보는 한국관광공사 Tour API(TourAPI 4.0) 데이터를 기반으로 하며,
-        정확한 최신 정보와 사진은 VisitKorea(대한민국 구석구석)에서 확인하실 수 있어요.
-      </p>
+      <div class="detail-body">
+        <span class="category-badge">{{ category }}</span>
+        <h1>{{ place.title }}</h1>
+
+        <ul class="info-list">
+          <li v-if="place.addr1">
+            <span class="info-label">주소</span>
+            <span>{{ place.addr1 }}{{ place.addr2 ? ` ${place.addr2}` : '' }}</span>
+          </li>
+          <li v-if="place.tel">
+            <span class="info-label">전화</span>
+            <span>{{ place.tel }}</span>
+          </li>
+          <li v-if="place.zipcode">
+            <span class="info-label">우편번호</span>
+            <span>{{ place.zipcode }}</span>
+          </li>
+        </ul>
+
+        <a :href="externalLink" target="_blank" rel="noopener noreferrer" class="visitkorea-btn">
+          VisitKorea에서 상세정보 보기 ↗
+        </a>
+
+        <p class="source-note">
+          본 정보는 한국관광공사 Tour API(TourAPI 4.0) 데이터를 기반으로 하며,
+          정확한 최신 정보와 사진은 VisitKorea(대한민국 구석구석)에서 확인하실 수 있어요.
+        </p>
+      </div>
+    </div>
+
+    <div v-else class="detail-map">
+      <PlaceMap
+        v-if="placeWithCategory"
+        :places="[placeWithCategory]"
+        :center="mapCenter"
+        :zoom="15"
+      />
+      <p v-else>로딩 중...</p>
     </div>
   </div>
 
@@ -82,6 +113,32 @@ function goBack() {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.detail-tabs {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.detail-tabs button {
+  border: 1px solid var(--lh-line);
+  background: var(--lh-surface);
+  color: var(--lh-muted);
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.detail-tabs button.active {
+  background: var(--lh-accent);
+  color: #fff;
+  border-color: var(--lh-accent);
+}
+
+.detail-map {
+  min-height: 520px;
 }
 
 .back-btn {

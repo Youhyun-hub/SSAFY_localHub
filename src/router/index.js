@@ -8,6 +8,7 @@ import BoardEditView from '@/views/BoardEditView.vue'
 import TourInfoView from '@/views/TourInfoView.vue'
 import PlaceDetailView from '@/views/PlaceDetailView.vue'
 import TripPlanView from '@/views/TripPlanView.vue'
+import MapView from '@/views/MapView.vue'
 
 const routes = [
   { path: '/', name: 'home', component: HomeView },
@@ -18,6 +19,7 @@ const routes = [
   { path: '/board/write', name: 'board-write', component: BoardWriteView },
   { path: '/board/:id', name: 'board-detail', component: BoardDetailView, props: true },
   { path: '/board/:id/edit', name: 'board-edit', component: BoardEditView, props: true },
+  { path: '/map', name: 'map', component: MapView },
 ]
 
 const router = createRouter({

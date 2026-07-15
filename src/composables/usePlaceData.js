@@ -1,6 +1,6 @@
 // RFP가 제공한 서울 7개 카테고리 JSON을 프론트엔드에서 직접 로드합니다.
 // (공공데이터: 한국관광공사 TourAPI 4.0, 공공누리 제3유형 — 출처 표시 필수, 변경 금지)
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const CATEGORY_FILES = {
   관광지: '/data/서울_관광지.json',
@@ -17,6 +17,9 @@ const CATEGORY_FILES = {
 const allData = ref({})
 const loading = ref(false)
 const loaded = ref(false)
+const selectedCategory = ref('관광지')
+const selectedDistrict = ref('')
+const placeKeyword = ref('')
 
 // TourInfoView의 카테고리 탭에서 사용
 const categories = Object.keys(CATEGORY_FILES)
@@ -104,6 +107,13 @@ export function usePlaceData() {
     return items.find((i) => i.contentid === contentid) || null
   }
 
+  const filteredPlaces = computed(() => {
+    return getFiltered(selectedCategory.value, {
+      district: selectedDistrict.value,
+      keyword: placeKeyword.value,
+    })
+  })
+  
   return {
     allData,
     loading,
@@ -116,5 +126,9 @@ export function usePlaceData() {
     getFiltered,
     getDetailLink,
     getItem,
+    selectedCategory,
+    selectedDistrict,
+    placeKeyword,
+    filteredPlaces,
   }
 }
