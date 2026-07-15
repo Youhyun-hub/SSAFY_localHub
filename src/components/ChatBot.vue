@@ -28,8 +28,15 @@ async function handleSend() {
 <template>
   <div class="chatbot-root">
     <!-- 접힌 상태: 플로팅 버튼 -->
-    <button v-if="!isOpen" class="chatbot-fab" @click="toggle" aria-label="챗봇 열기">
-      💬
+    <button
+      v-if="!isOpen"
+      class="chatbot-fab"
+      @click="toggle"
+      aria-label="LocalHub 챗봇 열기 - 서울 여행 정보를 물어보세요"
+      title="LocalHub 챗봇에게 물어보기"
+    >
+      <span class="chatbot-fab-icon" aria-hidden="true">💬</span>
+      <span class="chatbot-fab-label">챗봇</span>
     </button>
 
     <!-- 펼친 상태: 대화창 -->
@@ -76,15 +83,34 @@ async function handleSend() {
 }
 
 .chatbot-fab {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 52px;
+  padding: 0 20px 0 16px;
+  border-radius: 999px;
   border: none;
   background: var(--lh-accent);
   color: #fff;
-  font-size: 24px;
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(47, 111, 237, 0.35);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.chatbot-fab:hover {
+  box-shadow: 0 6px 20px rgba(47, 111, 237, 0.45);
+  transform: translateY(-1px);
+}
+
+.chatbot-fab-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.chatbot-fab-label {
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .chatbot-panel {
@@ -187,6 +213,19 @@ async function handleSend() {
 /* 모바일에서는 전체화면으로 표시 (RFP 요구사항) */
 @media (max-width: 480px) {
   .chatbot-root {
+    right: 16px;
+    bottom: 16px;
+    left: auto;
+  }
+  .chatbot-fab-label {
+    display: none; /* 좁은 화면에서는 아이콘만 표시 */
+  }
+  .chatbot-fab {
+    padding: 0;
+    width: 52px;
+    justify-content: center;
+  }
+  .chatbot-root:has(.chatbot-panel) {
     right: 0;
     bottom: 0;
     left: 0;

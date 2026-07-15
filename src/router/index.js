@@ -5,9 +5,11 @@ import BoardListView from '@/views/BoardListView.vue'
 import BoardDetailView from '@/views/BoardDetailView.vue'
 import BoardWriteView from '@/views/BoardWriteView.vue'
 import BoardEditView from '@/views/BoardEditView.vue'
+import TourInfoView from '@/views/TourInfoView.vue'
 
 const routes = [
   { path: '/', name: 'home', component: HomeView },
+  { path: '/tour', name: 'tour-info', component: TourInfoView },
   { path: '/board', name: 'board-list', component: BoardListView },
   { path: '/board/write', name: 'board-write', component: BoardWriteView },
   { path: '/board/:id', name: 'board-detail', component: BoardDetailView, props: true },

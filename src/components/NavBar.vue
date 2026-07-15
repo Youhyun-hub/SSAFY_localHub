@@ -14,6 +14,9 @@ const route = useRoute()
 
       <nav class="menu">
         <RouterLink to="/" class="menu-link" :class="{ active: route.path === '/' }">홈</RouterLink>
+        <RouterLink to="/tour" class="menu-link" :class="{ active: route.path.startsWith('/tour') }">
+          관광정보
+        </RouterLink>
         <RouterLink to="/board" class="menu-link" :class="{ active: route.path.startsWith('/board') }">
           게시판
         </RouterLink>

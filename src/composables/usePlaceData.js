@@ -18,6 +18,16 @@ const allData = ref({})
 const loading = ref(false)
 const loaded = ref(false)
 
+// TourInfoView의 카테고리 탭에서 사용
+const categories = Object.keys(CATEGORY_FILES)
+
+// addr1은 "서울특별시 영등포구 노들로 221 (당산동)" 형태 — 구 이름만 뽑아냄
+function extractDistrict(addr1) {
+  if (!addr1) return ''
+  const match = addr1.match(/서울특별시\s+(\S+?(?:구|군))/)
+  return match ? match[1] : ''
+}
+
 export function usePlaceData() {
   async function loadAll() {
     if (loaded.value) return // 이미 로드했으면 재요청 안 함
@@ -58,5 +68,46 @@ export function usePlaceData() {
     return results
   }
 
-  return { allData, loading, loaded, loadAll, getSample, searchPlaces }
+  // 카테고리 내 존재하는 구(區) 목록 (필터 셀렉트박스용)
+  function getDistricts(category) {
+    const items = allData.value[category] || []
+    const set = new Set()
+    for (const item of items) {
+      const gu = extractDistrict(item.addr1)
+      if (gu) set.add(gu)
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'ko'))
+  }
+
+  // 관광정보 페이지: 구/검색어로 필터링된 목록 (이미지 있는 항목만 — 카드에 이미지 필수)
+  function getFiltered(category, { district = '', keyword = '' } = {}) {
+    const items = allData.value[category] || []
+    return items.filter((item) => {
+      if (!item.firstimage) return false
+      if (district && extractDistrict(item.addr1) !== district) return false
+      if (keyword && !(item.title?.includes(keyword) || item.addr1?.includes(keyword))) return false
+      return true
+    })
+  }
+
+  // 카드 클릭 시 이동할 외부 링크.
+  // ⚠️ TourAPI의 contentid는 VisitKorea 사이트 내부 ID(cotid, UUID 형식)와 다르기 때문에
+  // 항목별 상세페이지로 직접 연결할 수 없음 — 대신 이름으로 VisitKorea 검색 결과 페이지로 연결
+  function getDetailLink(item) {
+    const keyword = encodeURIComponent(item?.title || '')
+    return `https://korean.visitkorea.or.kr/search/search_list.do?keyword=${keyword}`
+  }
+
+  return {
+    allData,
+    loading,
+    loaded,
+    loadAll,
+    getSample,
+    searchPlaces,
+    categories,
+    getDistricts,
+    getFiltered,
+    getDetailLink,
+  }
 }
