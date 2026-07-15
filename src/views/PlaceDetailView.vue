@@ -11,14 +11,31 @@ const props = defineProps({
 
 const router = useRouter()
 const { loaded, loadAll, getItem, getDetailLink } = usePlaceData()
+
+// 탭 상태
 const activeTab = ref('info')
 
 onMounted(async () => {
   if (!loaded.value) await loadAll()
 })
 
+// 기존 place 계산 속성
 const place = computed(() => getItem(props.category, props.id))
 const externalLink = computed(() => (place.value ? getDetailLink(place.value) : '#'))
+
+// 템플릿에서 사용되는 값들 정의 (없어서 경고 발생)
+const placeWithCategory = computed(() => {
+  if (!place.value) return null
+  return { ...place.value, category: props.category }
+})
+
+const mapCenter = computed(() => {
+  if (!place.value) return { lat: 37.5665, lng: 126.9780 }
+  return {
+    lat: Number(place.value.mapy) || 37.5665,
+    lng: Number(place.value.mapx) || 126.9780,
+  }
+})
 
 function goBack() {
   router.back()
