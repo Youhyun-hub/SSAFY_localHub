@@ -2,26 +2,51 @@
 import { onMounted, ref, computed, watch } from 'vue'
 import { usePlaceData } from '@/composables/usePlaceData'
 import PlaceCard from '@/components/PlaceCard.vue'
+import KakaoMap from '@/components/KakaoMap.vue'
 
 const { allData, loading, loaded, loadAll, categories, getDistricts, getFiltered } = usePlaceData()
 
 onMounted(loadAll)
 
-// 홈 화면에서 노출하던 3개 카테고리를 기본값으로 하되, 전체 카테고리를 탭으로 제공
 const activeCategory = ref('관광지')
-const activeDistrict = ref('') // '' = 전체
+const activeDistrict = ref('')
 const keyword = ref('')
 const page = ref(0)
 const pageSize = 10
 
 const districts = computed(() => (loaded.value ? getDistricts(activeCategory.value) : []))
 
+const filterState = computed(() => ({
+  category: activeCategory.value,
+  district: activeDistrict.value,
+  keyword: keyword.value.trim(),
+}))
+
 const filtered = computed(() => {
   if (!loaded.value) return []
-  return getFiltered(activeCategory.value, {
-    district: activeDistrict.value,
-    keyword: keyword.value.trim(),
+  return getFiltered(filterState.value.category, {
+    district: filterState.value.district,
+    keyword: filterState.value.keyword,
   })
+})
+
+const mapPlaces = computed(() =>
+  filtered.value.filter((place) => {
+    const lat = Number(place.mapy)
+    const lng = Number(place.mapx)
+    return Number.isFinite(lat) && Number.isFinite(lng)
+  })
+)
+
+const mapCenter = computed(() => {
+  const first = mapPlaces.value[0]
+  if (!first) {
+    return { lat: 37.5665, lng: 126.9780 }
+  }
+  return {
+    lat: Number(first.mapy),
+    lng: Number(first.mapx),
+  }
 })
 
 const totalPages = computed(() => Math.max(1, Math.ceil(filtered.value.length / pageSize)))
@@ -31,7 +56,6 @@ const pagedItems = computed(() => {
   return filtered.value.slice(start, start + pageSize)
 })
 
-// 카테고리·구·검색어가 바뀌면 첫 페이지로 초기화
 watch([activeCategory, activeDistrict, keyword], () => {
   page.value = 0
 })
@@ -92,34 +116,44 @@ function nextPage() {
 
     <section v-if="loading" class="loading-msg">데이터를 불러오는 중이에요...</section>
 
-    <section v-else class="carousel">
-      <button
-        class="carousel-arrow prev"
-        :disabled="page === 0"
-        aria-label="이전"
-        @click="prevPage"
-      >
-        ‹
-      </button>
+    <div v-else class="content-stack">
+      <section class="carousel">
+        <button
+          class="carousel-arrow prev"
+          :disabled="page === 0"
+          aria-label="이전"
+          @click="prevPage"
+        >
+          ‹
+        </button>
 
-      <div class="place-grid">
-        <PlaceCard
-          v-for="place in pagedItems"
-          :key="place.contentid"
-          :place="{ ...place, category: activeCategory }"
-        />
-        <p v-if="!pagedItems.length" class="empty-msg">조건에 맞는 정보가 없어요.</p>
-      </div>
+        <div class="place-grid">
+          <PlaceCard
+            v-for="place in pagedItems"
+            :key="place.contentid"
+            :place="{ ...place, category: activeCategory }"
+          />
+          <p v-if="!pagedItems.length" class="empty-msg">조건에 맞는 정보가 없어요.</p>
+        </div>
 
-      <button
-        class="carousel-arrow next"
-        :disabled="page >= totalPages - 1"
-        aria-label="다음"
-        @click="nextPage"
-      >
-        ›
-      </button>
-    </section>
+        <button
+          class="carousel-arrow next"
+          :disabled="page >= totalPages - 1"
+          aria-label="다음"
+          @click="nextPage"
+        >
+          ›
+        </button>
+      </section>
+
+      <section class="map-section">
+        <div class="section-title-row">
+          <h2>지도에서 보기</h2>
+          <span class="map-count">{{ filtered.length }}개</span>
+        </div>
+        <KakaoMap :places="mapPlaces" :center="mapCenter" :zoom="8" height="360px" />
+      </section>
+    </div>
 
     <p v-if="!loading && filtered.length" class="page-indicator">
       {{ page + 1 }} / {{ totalPages }} 페이지 · 총 {{ filtered.length }}건
@@ -207,6 +241,36 @@ function nextPage() {
 .empty-msg {
   color: var(--lh-muted);
   font-size: 14px;
+}
+
+.content-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.map-section {
+  border: 1px solid var(--lh-line);
+  background: var(--lh-surface);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.section-title-row h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.map-count {
+  font-size: 12px;
+  color: var(--lh-muted);
 }
 
 .carousel {

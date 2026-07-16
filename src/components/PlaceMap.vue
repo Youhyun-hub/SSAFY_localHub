@@ -76,5 +76,5 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.place-map { width: 100%; min-height: 520px; }
+.place-map { width: 100%; min-height: 360px; }
 </style>
