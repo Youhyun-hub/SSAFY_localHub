@@ -99,6 +99,9 @@ function renderMarkers() {
 
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
 
+    // 한국 영토를 크게 벗어나는 이상치 좌표 방어 (TourAPI 원본 데이터 오류로
+    // 위도 19~20대, 경도 117~118대 같은 완전히 엉뚱한 값이 섞여 있는 경우가 있음)
+    if (lat < 33 || lat > 39 || lng < 124 || lng > 132) return;
     const position = new window.kakao.maps.LatLng(lat, lng);
     const marker = new window.kakao.maps.Marker({
       position,
