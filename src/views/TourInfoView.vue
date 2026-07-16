@@ -18,6 +18,7 @@ onMounted(loadAll);
 
 const activeCategory = ref("관광지");
 const activeDistrict = ref("");
+const activeMonth = ref("");
 const keyword = ref("");
 const page = ref(0);
 const pageSize = 10;
@@ -37,8 +38,11 @@ const filtered = computed(() => {
   return getFiltered(filterState.value.category, {
     district: filterState.value.district,
     keyword: filterState.value.keyword,
+    month: isFestival.value ? activeMonth.value : "",
   });
 });
+
+const isFestival = computed(() => activeCategory.value === "축제공연행사"); // ← 이 줄을 새로 추가
 
 const mapPlaces = computed(() =>
   filtered.value.filter((place) => {
@@ -68,13 +72,14 @@ const pagedItems = computed(() => {
   return filtered.value.slice(start, start + pageSize);
 });
 
-watch([activeCategory, activeDistrict, keyword], () => {
+watch([activeCategory, activeDistrict, keyword, activeMonth], () => {
   page.value = 0;
 });
 
 function selectCategory(cat) {
   activeCategory.value = cat;
   activeDistrict.value = "";
+  activeMonth.value = "";
 }
 
 function prevPage() {
@@ -113,6 +118,11 @@ function nextPage() {
         <option v-for="gu in districts" :key="gu" :value="gu">{{ gu }}</option>
       </select>
 
+      <select v-if="isFestival" v-model="activeMonth" class="month-select">
+        <option value="">전체 기간</option>
+        <option v-for="m in 12" :key="m" :value="String(m)">{{ m }}월</option>
+      </select>
+
       <input
         v-model="keyword"
         type="text"
@@ -121,10 +131,9 @@ function nextPage() {
       />
     </div>
 
-    <p class="month-note">
-      ℹ️ 제공된 데이터에는 축제·행사의 정확한 시작일·종료일 정보가 포함되어 있지
-      않아, 월별 필터는 아직 제공하지 않아요. 구별 필터와 검색으로 원하는 정보를
-      찾아보세요.
+    <p v-if="isFestival" class="month-note">
+      ℹ️ 축제 시작일 기준 월별로 필터링돼요. 일부 축제는 상세 일정이 등록되지
+      않아 목록에서 빠질 수 있어요.
     </p>
 
     <section v-if="loading" class="loading-msg">
@@ -236,6 +245,7 @@ function nextPage() {
 }
 
 .district-select,
+.month-select,
 .keyword-input {
   border: 1px solid var(--lh-line);
   border-radius: 8px;

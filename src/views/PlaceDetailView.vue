@@ -1,48 +1,57 @@
 <script setup>
-import { computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import PlaceMap from '@/components/PlaceMap.vue'
-import { usePlaceData } from '@/composables/usePlaceData'
+import { computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import PlaceMap from "@/components/PlaceMap.vue";
+import { usePlaceData } from "@/composables/usePlaceData";
 
 const props = defineProps({
   category: { type: String, required: true },
   id: { type: String, required: true },
-})
+});
 
-const router = useRouter()
-const { loaded, loadAll, getItem, getDetailLink } = usePlaceData()
+const router = useRouter();
+const { loaded, loadAll, getItem, getDetailLink } = usePlaceData();
 
 onMounted(async () => {
-  if (!loaded.value) await loadAll()
-})
+  if (!loaded.value) await loadAll();
+});
 
-const place = computed(() => getItem(props.category, props.id))
-const externalLink = computed(() => (place.value ? getDetailLink(place.value) : '#'))
+const place = computed(() => getItem(props.category, props.id));
+const externalLink = computed(() =>
+  place.value ? getDetailLink(place.value) : "#",
+);
+
+const isFestival = computed(() => props.category === "축제공연행사");
+
+function formatEventDate(raw) {
+  if (!raw || raw.length !== 8) return "";
+  return `${raw.slice(0, 4)}.${raw.slice(4, 6)}.${raw.slice(6, 8)}`;
+}
 
 const placeWithCategory = computed(() => {
-  if (!place.value) return null
-  return { ...place.value, category: props.category }
-})
+  if (!place.value) return null;
+  return { ...place.value, category: props.category };
+});
 
 const mapCenter = computed(() => {
-  if (!place.value) return { lat: 37.5665, lng: 126.9780 }
+  if (!place.value) return { lat: 37.5665, lng: 126.978 };
   return {
     lat: Number(place.value.mapy) || 37.5665,
-    lng: Number(place.value.mapx) || 126.9780,
-  }
-})
+    lng: Number(place.value.mapx) || 126.978,
+  };
+});
 
 function goBack() {
-  router.back()
+  router.back();
 }
 
 function openKakaoNavigation() {
-  if (!place.value) return
+  if (!place.value) return;
 
-  const destinationName = encodeURIComponent(place.value.title || '목적지')
-  const kakaoUrl = `https://map.kakao.com/link/to/${destinationName},${mapCenter.value.lat},${mapCenter.value.lng}`
+  const destinationName = encodeURIComponent(place.value.title || "목적지");
+  const kakaoUrl = `https://map.kakao.com/link/to/${destinationName},${mapCenter.value.lat},${mapCenter.value.lng}`;
 
-  window.open(kakaoUrl, '_blank', 'noopener,noreferrer')
+  window.open(kakaoUrl, "_blank", "noopener,noreferrer");
 }
 </script>
 
@@ -68,9 +77,22 @@ function openKakaoNavigation() {
       <h1>{{ place.title }}</h1>
 
       <ul class="info-list">
+        <li v-if="isFestival && place.eventstartdate">
+          <span class="info-label">기간</span>
+          <span
+            >{{ formatEventDate(place.eventstartdate) }} ~
+            {{ formatEventDate(place.eventenddate) }}</span
+          >
+        </li>
+        <li v-if="isFestival && place.eventplace">
+          <span class="info-label">장소</span>
+          <span>{{ place.eventplace }}</span>
+        </li>
         <li v-if="place.addr1">
           <span class="info-label">주소</span>
-          <span>{{ place.addr1 }}{{ place.addr2 ? ` ${place.addr2}` : '' }}</span>
+          <span
+            >{{ place.addr1 }}{{ place.addr2 ? ` ${place.addr2}` : "" }}</span
+          >
         </li>
         <li v-if="place.tel">
           <span class="info-label">전화</span>
@@ -82,13 +104,19 @@ function openKakaoNavigation() {
         </li>
       </ul>
 
-      <a :href="externalLink" target="_blank" rel="noopener noreferrer" class="visitkorea-btn">
+      <a
+        :href="externalLink"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="visitkorea-btn"
+      >
         VisitKorea에서 상세정보 보기 ↗
       </a>
 
       <p class="source-note">
         본 정보는 한국관광공사 Tour API(Tour API 4.0) 데이터를 기반으로 하며,
-        정확한 최신 정보와 사진은 VisitKorea(대한민국 구석구석)에서 확인하실 수 있어요.
+        정확한 최신 정보와 사진은 VisitKorea(대한민국 구석구석)에서 확인하실 수
+        있어요.
       </p>
 
       <div class="map-section">
@@ -103,10 +131,12 @@ function openKakaoNavigation() {
             :center="mapCenter"
             :zoom="15"
           />
-          
+
           <p v-else>로딩 중...</p>
 
-          <button class="nav-btn" type="button" @click="openKakaoNavigation">🧭 카카오 길찾기</button>
+          <button class="nav-btn" type="button" @click="openKakaoNavigation">
+            🧭 카카오 길찾기
+          </button>
         </div>
       </div>
     </div>
