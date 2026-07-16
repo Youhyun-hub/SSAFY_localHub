@@ -1,76 +1,88 @@
 <script setup>
-import { onMounted, ref, computed, watch } from 'vue'
-import { usePlaceData } from '@/composables/usePlaceData'
-import PlaceCard from '@/components/PlaceCard.vue'
-import KakaoMap from '@/components/KakaoMap.vue'
+import { onMounted, ref, computed, watch } from "vue";
+import { usePlaceData } from "@/composables/usePlaceData";
+import PlaceCard from "@/components/PlaceCard.vue";
+import KakaoMap from "@/components/KakaoMap.vue";
 
-const { allData, loading, loaded, loadAll, categories, getDistricts, getFiltered } = usePlaceData()
+const {
+  allData,
+  loading,
+  loaded,
+  loadAll,
+  categories,
+  getDistricts,
+  getFiltered,
+} = usePlaceData();
 
-onMounted(loadAll)
+onMounted(loadAll);
 
-const activeCategory = ref('관광지')
-const activeDistrict = ref('')
-const keyword = ref('')
-const page = ref(0)
-const pageSize = 10
+const activeCategory = ref("관광지");
+const activeDistrict = ref("");
+const keyword = ref("");
+const page = ref(0);
+const pageSize = 10;
 
-const districts = computed(() => (loaded.value ? getDistricts(activeCategory.value) : []))
+const districts = computed(() =>
+  loaded.value ? getDistricts(activeCategory.value) : [],
+);
 
 const filterState = computed(() => ({
   category: activeCategory.value,
   district: activeDistrict.value,
   keyword: keyword.value.trim(),
-}))
+}));
 
 const filtered = computed(() => {
-  if (!loaded.value) return []
+  if (!loaded.value) return [];
   return getFiltered(filterState.value.category, {
     district: filterState.value.district,
     keyword: filterState.value.keyword,
-  })
-})
+  });
+});
 
 const mapPlaces = computed(() =>
   filtered.value.filter((place) => {
-    const lat = Number(place.mapy)
-    const lng = Number(place.mapx)
-    return Number.isFinite(lat) && Number.isFinite(lng)
-  })
-)
+    const lat = Number(place.mapy);
+    const lng = Number(place.mapx);
+    return Number.isFinite(lat) && Number.isFinite(lng);
+  }),
+);
 
 const mapCenter = computed(() => {
-  const first = mapPlaces.value[0]
+  const first = mapPlaces.value[0];
   if (!first) {
-    return { lat: 37.5665, lng: 126.9780 }
+    return { lat: 37.5665, lng: 126.978 };
   }
   return {
     lat: Number(first.mapy),
     lng: Number(first.mapx),
-  }
-})
+  };
+});
 
-const totalPages = computed(() => Math.max(1, Math.ceil(filtered.value.length / pageSize)))
+const totalPages = computed(() =>
+  Math.max(1, Math.ceil(filtered.value.length / pageSize)),
+);
 
 const pagedItems = computed(() => {
-  const start = page.value * pageSize
-  return filtered.value.slice(start, start + pageSize)
-})
+  const start = page.value * pageSize;
+  return filtered.value.slice(start, start + pageSize);
+});
 
 watch([activeCategory, activeDistrict, keyword], () => {
-  page.value = 0
-})
+  page.value = 0;
+});
 
 function selectCategory(cat) {
-  activeCategory.value = cat
-  activeDistrict.value = ''
+  activeCategory.value = cat;
+  activeDistrict.value = "";
 }
 
 function prevPage() {
-  if (page.value > 0) page.value -= 1
+  if (page.value > 0) page.value -= 1;
 }
 
 function nextPage() {
-  if (page.value < totalPages.value - 1) page.value += 1
+  if (page.value < totalPages.value - 1) page.value += 1;
 }
 </script>
 
@@ -110,11 +122,14 @@ function nextPage() {
     </div>
 
     <p class="month-note">
-      ℹ️ 제공된 데이터에는 축제·행사의 정확한 시작일·종료일 정보가 포함되어 있지 않아,
-      월별 필터는 아직 제공하지 않아요. 구별 필터와 검색으로 원하는 정보를 찾아보세요.
+      ℹ️ 제공된 데이터에는 축제·행사의 정확한 시작일·종료일 정보가 포함되어 있지
+      않아, 월별 필터는 아직 제공하지 않아요. 구별 필터와 검색으로 원하는 정보를
+      찾아보세요.
     </p>
 
-    <section v-if="loading" class="loading-msg">데이터를 불러오는 중이에요...</section>
+    <section v-if="loading" class="loading-msg">
+      데이터를 불러오는 중이에요...
+    </section>
 
     <div v-else class="content-stack">
       <section class="carousel">
@@ -133,7 +148,9 @@ function nextPage() {
             :key="place.contentid"
             :place="{ ...place, category: activeCategory }"
           />
-          <p v-if="!pagedItems.length" class="empty-msg">조건에 맞는 정보가 없어요.</p>
+          <p v-if="!pagedItems.length" class="empty-msg">
+            조건에 맞는 정보가 없어요.
+          </p>
         </div>
 
         <button
@@ -151,7 +168,12 @@ function nextPage() {
           <h2>지도에서 보기</h2>
           <span class="map-count">{{ filtered.length }}개</span>
         </div>
-        <KakaoMap :places="mapPlaces" :center="mapCenter" :zoom="8" height="360px" />
+        <KakaoMap
+          :places="mapPlaces"
+          :center="mapCenter"
+          :zoom="8"
+          height="360px"
+        />
       </section>
     </div>
 
@@ -250,10 +272,9 @@ function nextPage() {
 }
 
 .map-section {
-  border: 1px solid var(--lh-line);
-  background: var(--lh-surface);
+  background: transparent;
   border-radius: 16px;
-  padding: 16px;
+  padding: 16px 0;
 }
 
 .section-title-row {
